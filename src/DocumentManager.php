@@ -7,7 +7,7 @@ use Apsonex\Document\Support\DocumentFactory;
 use Apsonex\Document\Support\ImageFactory;
 use Illuminate\Http\UploadedFile;
 
-class Document
+class DocumentManager
 {
 
     public function saveImageFor($model, UploadedFile $file, $public = true, $variations = []): DocumentModel
@@ -22,7 +22,7 @@ class Document
 
     public static function delete(DocumentModel|int $document): bool
     {
-        $document = is_object($document) ? $document : Document::whereId($document)->firstOrFail();
+        $document = is_object($document) ? $document : DocumentManager::whereId($document)->firstOrFail();
 
         return ImageFactory::delete($document->path, $document->visibility);
     }

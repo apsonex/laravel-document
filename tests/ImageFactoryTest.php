@@ -3,9 +3,6 @@
 namespace Apsonex\Document\Tests;
 
 use Apsonex\Document\Support\ImageFactory;
-use Apsonex\Document\Support\ImageSizes;
-use Illuminate\Http\Testing\File;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 

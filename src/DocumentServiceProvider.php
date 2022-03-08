@@ -24,7 +24,7 @@ class DocumentServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(self::CONFIG_PATH, 'document');
 
-        $this->app->bind('document', fn() => new Document());
+        $this->app->bind('document', fn() => new \Apsonex\Document\DocumentManager());
     }
 
 

@@ -6,8 +6,6 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Facade;
 
 
-// @method static \Illuminate\Contracts\Filesystem\Filesystem assertExists(string|array $path)
-
 /**
  * @method static \Apsonex\Document\Models\Document saveImageFor($model, UploadedFile $file, bool $public, array $variations)
  * @method static \Apsonex\Document\Support\ImageFactory imageFactory(UploadedFile|string $file)
