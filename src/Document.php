@@ -10,7 +10,7 @@ use Illuminate\Http\UploadedFile;
 class Document
 {
 
-    public function saveImageFor($model, UploadedFile|array $file, $public = true, $variations = []): DocumentModel
+    public function saveImageFor($model, UploadedFile $file, $public = true, $variations = []): DocumentModel
     {
         return DocumentFactory::saveImageFor($model, $file, $public, $variations);
     }
