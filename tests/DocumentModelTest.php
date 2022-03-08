@@ -68,6 +68,8 @@ class DocumentModelTest extends TestCase
 
         $document = DocumentFactory::saveImageFor($model, $this->testFile('food-hd.jpg'), $public, $variations);
 
+        dd($document->toArray());
+
         $this->assertEquals(get_class($model), $document->documentable_type);
 
         $this->assertEquals($model->id, $document->documentable_id);

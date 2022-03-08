@@ -36,16 +36,23 @@ class Document extends Model
 
     public function toArray(): array
     {
-        return collect(parent::toArray())->map(function ($data) {
-            return [
-                ...$data,
-                //'url' => $this->getUrl($data['path']),
+        $data = parent::toArray();
+
+        foreach ($data['variations'] ?? [] as $name  => $variation) {
+            $data['variations'][$name] = [
+                ...$variation,
+                'url' => $this->getUrl($variation['path'])
             ];
-        })->toArray();
+        }
+
+        return [
+            ...$data,
+            'url' => $this->getUrl($data['path']),
+        ];
     }
 
-    public function getUrl($path)
+    public function getUrl($path): string
     {
-        //Storage::disk($this->public)
+        return asset(Storage::disk($this->visibility === 'public' ? 'public' : 'private')->url($path));
     }
 }
