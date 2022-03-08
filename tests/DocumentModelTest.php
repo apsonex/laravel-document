@@ -32,6 +32,7 @@ class DocumentModelTest extends TestCase
             'disk'              => 'public',
             'path'              => 'image/path',
             'size'              => 12345,
+            'visibility'         => 'public',
             'variations'        => [],
         ];
         $this->assertDatabaseCount(Document::class, 0);

@@ -24,6 +24,7 @@ class CreateDocumentsTable extends Migration
             $table->string('mime');
             $table->string('path');
             $table->string('disk');
+            $table->string('visibility');
             $table->unsignedBigInteger('size')->nullable();
 
             $table->json('variations')->nullable();

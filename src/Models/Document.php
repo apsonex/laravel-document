@@ -5,6 +5,7 @@ namespace Apsonex\Document\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class Document extends Model
@@ -31,5 +32,20 @@ class Document extends Model
     public function documentable(): MorphTo
     {
         return $this->morphTo();
+    }
+
+    public function toArray(): array
+    {
+        return collect(parent::toArray())->map(function ($data) {
+            return [
+                ...$data,
+                //'url' => $this->getUrl($data['path']),
+            ];
+        })->toArray();
+    }
+
+    public function getUrl($path)
+    {
+        //Storage::disk($this->public)
     }
 }

@@ -127,7 +127,7 @@ class ImageFactory
     {
         $image = $image ?: $this->image;
 
-        $visibility = $this->private ? 'private' : 'public';
+        $visibility = $this->private === true ? 'private' : 'public';
 
         $disk = static::disk($this->private);
 
@@ -144,12 +144,17 @@ class ImageFactory
             'filename'   => str($path)->afterLast('/')->toString(),
             'path'       => $path,
             'visibility' => $visibility,
-            'disk'       => $this->private ? config('document.disk.private') : config('document.disk.public'),
+            'disk'       => static::diskName($this->private),
         ];
 
         $image = null;
 
         return $data;
+    }
+
+    protected static function diskName($private): string
+    {
+        return $private === true ? 'private' : 'public';
     }
 
     public function variations(): array
@@ -159,12 +164,16 @@ class ImageFactory
 
     public static function delete(string $path, $private = false): bool
     {
-        return static::disk($private)->delete($path);
+        return static::disk(
+            static::diskName($private)
+        )->delete($path);
     }
 
     protected static function disk($private): \Illuminate\Contracts\Filesystem\Filesystem
     {
-        return Storage::disk($private ? config('document.disk.private') : config('document.disk.public'));
+        return Storage::disk(
+            static::diskName($private)
+        );
     }
 
 }
