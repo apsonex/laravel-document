@@ -43,7 +43,7 @@
         "Apsonex\\Document\\DocumentServiceProvider"
       ],
       "aliases": {
-        "MLS": "Apsonex\\Document\\Support\\Facades"
+        "Document": "Apsonex\\Document\\Facades\\Document"
       }
     }
   },
