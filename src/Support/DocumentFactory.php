@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 class DocumentFactory
 {
 
-    public static function saveImageFor($model, UploadedFile $file, $public = true, $variations = [])
+    public static function saveImageFor($model, UploadedFile|array $file, $public = true, $variations = [])
     {
         $imageFactory = ImageFactory::make($file);
 

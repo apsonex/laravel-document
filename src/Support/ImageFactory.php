@@ -4,11 +4,8 @@ namespace Apsonex\Document\Support;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 use Intervention\Image\ImageManager;
-use PhpParser\PrettyPrinter\Standard;
 
 class ImageFactory
 {
@@ -91,6 +88,7 @@ class ImageFactory
                     'name'      => $name,
                     'directory' => $data['directory'],
                 ];
+
                 $data['variations'][$name] = $this->saveVariation($variation, $this->image);
 
                 $this->image->reset();
@@ -152,51 +150,6 @@ class ImageFactory
         $image = null;
 
         return $data;
-
-        //        if ($this->variationDimensions->isNotEmpty()) {
-        //
-        //            $this->image->backup();
-        //
-        //            $batch = now()->getTimestamp();
-        //
-        //            File::ensureDirectoryExists($dir = $dir . '/variations');
-        //
-        //            foreach ($this->variationDimensions as $variationName => $variation) {
-        //                $this->image
-        //                    ->fit($variation['width'], $variation['height'])
-        //                    ->encode(
-        //                        $this->image->extension
-        //                    );
-        //
-        //                $path = vsprintf("%s/%s", [
-        //                    $dir = ($variation['suffix'] . '/variations'),
-        //                    $filename = ($variation['name'] . '-' . $batch . '.' . $this->image->extension)
-        //                ]);
-        //
-        //                $disk->put($path, $this->image->getEncoded(), $visibility);
-        //
-        //                $this->variations[$variationName] = [
-        //                    'batch'      => $batch,
-        //                    'mime'       => $this->image->mime(),
-        //                    'extension'  => $this->image->extension,
-        //                    'size'       => $disk->size($path),
-        //                    'width'      => $variation['width'],
-        //                    'height'     => $variation['height'],
-        //                    'directory'  => $dir,
-        //                    'filename'   => $filename,
-        //                    'path'       => $path,
-        //                    'visibility' => $visibility,
-        //                    'disk'       => $this->private ? config('document.disk.private') : config('document.disk.public'),
-        //                ];
-        //
-        //                $this->image->reset();
-        //            }
-        //
-        //            $data['variations'] = $this->variations();
-        //
-        //        }
-        //
-        //        return $data;
     }
 
     public function variations(): array
