@@ -33,7 +33,13 @@ class DocumentFactory
 
         $baseName = str($file->getBasename())->beforeLast('.')->toString();
 
-        $path = vsprintf("%s/%s", [$model->media_path ?? md5(Str::uuid()), str($baseName . ' ' . now()->getTimestamp())->slug()->toString() . '.jpg']);
+        $pathPrefix = method_exists($model, 'storagePathPrefix') ? $model->storagePathPrefix() : md5(Str::uuid());
+
+        //$path = vsprintf("%s/%s", [$model->media_path ?? md5(Str::uuid()), str($baseName . ' ' . now()->getTimestamp())->slug()->toString() . '.jpg']);
+        $path = vsprintf("%s/%s", [
+                $pathPrefix,
+                str($baseName . ' ' . now()->getTimestamp())->slug()->toString() . '.jpg']
+        );
 
         $data = [
             'documentable_type' => get_class($model),

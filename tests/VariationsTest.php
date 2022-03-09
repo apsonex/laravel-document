@@ -4,6 +4,7 @@ namespace Apsonex\LaravelDocument\Tests;
 
 use Apsonex\LaravelDocument\Facades\Document;
 use Apsonex\LaravelDocument\Support\ImageVariationNames;
+use Apsonex\LaravelDocument\Tests\fixtures\TestModel;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
@@ -24,11 +25,7 @@ class VariationsTest extends TestCase
     /** @test */
     public function it_queue_variation_processing()
     {
-        $model = (new \stdClass());
-
-        $model->id = 1;
-
-        $model->media_path = md5(Str::uuid()->toString());
+        $model = new TestModel();
 
         File::ensureDirectoryExists($this->getPublicStoragePath());
 
