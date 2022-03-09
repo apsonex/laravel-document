@@ -47,12 +47,14 @@ class DocumentFactory
             'type'              => 'image',
         ];
 
-        if ($this->queue) {
+        if ($this->queue === true) {
             $document = $this->createDocument(
                 array_merge($data, $imageFactory->save($path, $imageFactory->getImage()))
             );
 
-            $this->queueToMakeDocumentVariations($document->id, $variations);
+            if (!empty($variations)) {
+                $this->queueToMakeDocumentVariations($document->id, $variations);
+            }
 
             return $document;
         }
