@@ -11,6 +11,8 @@ use Illuminate\Support\Str;
 class Document extends Model
 {
 
+    const TO_BE_DELETED = "to_be_deleted";
+
     protected $table = 'documents';
 
     protected $guarded = ['id'];
@@ -38,7 +40,7 @@ class Document extends Model
     {
         $data = parent::toArray();
 
-        foreach ($data['variations'] ?? [] as $name  => $variation) {
+        foreach ($data['variations'] ?? [] as $name => $variation) {
             $data['variations'][$name] = [
                 ...$variation,
                 'url' => $this->getUrl($variation['path'])

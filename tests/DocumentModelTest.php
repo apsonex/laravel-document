@@ -2,9 +2,11 @@
 
 namespace Apsonex\Document\Tests;
 
+use Apsonex\Document\Actions\DeleteDocumentsAction;
 use Apsonex\Document\Models\Document;
 use Apsonex\Document\Support\DocumentFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
@@ -32,7 +34,7 @@ class DocumentModelTest extends TestCase
             'disk'              => 'public',
             'path'              => 'image/path',
             'size'              => 12345,
-            'visibility'         => 'public',
+            'visibility'        => 'public',
             'variations'        => [],
         ];
         $this->assertDatabaseCount(Document::class, 0);
@@ -63,16 +65,38 @@ class DocumentModelTest extends TestCase
             'dimension:100x100,name'
         ];
 
-        $public = true;
-
-
-        $document = DocumentFactory::saveImageFor($model, $this->testFile('food-hd.jpg'), $public, $variations);
-
-        dd($document->toArray());
+        $document = DocumentFactory::saveImageFor($model, $this->testFile('food-hd.jpg'), true, $variations);
 
         $this->assertEquals(get_class($model), $document->documentable_type);
 
         $this->assertEquals($model->id, $document->documentable_id);
+    }
+
+    /** @test */
+    public function it_can_delete_documents_from_database_and_storage()
+    {
+        $this->cleanStorage();
+
+        $model = (new \stdClass());
+
+        $model->id = 1;
+
+        $model->media_path = md5(Str::uuid()->toString());
+
+        $variations = [
+            'facebook',
+            'twitter',
+            'thumbnail',
+            'dimension:100x100,name'
+        ];
+
+        $document = DocumentFactory::saveImageFor($model, $this->testFile('food-hd.jpg'), true, $variations);
+
+        $this->assertNotEmpty(File::allFiles(__DIR__ . '/../vendor/orchestra/testbench-core/laravel/storage/app/public'));
+
+        DeleteDocumentsAction::execute($document->id);
+
+        $this->assertEmpty(File::allFiles(__DIR__ . '/../vendor/orchestra/testbench-core/laravel/storage/app/public'));
     }
 
 }

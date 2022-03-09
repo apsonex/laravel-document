@@ -2,10 +2,12 @@
 
 namespace Apsonex\Document;
 
+use Apsonex\Document\Jobs\DeleteDocumentJob;
 use Apsonex\Document\Models\Document as DocumentModel;
 use Apsonex\Document\Support\DocumentFactory;
 use Apsonex\Document\Support\ImageFactory;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Arr;
 
 class DocumentManager
 {
@@ -25,6 +27,13 @@ class DocumentManager
         $document = is_object($document) ? $document : DocumentManager::whereId($document)->firstOrFail();
 
         return ImageFactory::delete($document->path, $document->visibility);
+    }
+
+    public static function deleteById(array|int $ids): void
+    {
+        if ($ids) {
+            DeleteDocumentJob::dispatch(Arr::wrap($ids));
+        }
     }
 
 }

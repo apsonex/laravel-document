@@ -17,6 +17,7 @@ class CreateDocumentsTable extends Migration
             $table->id();
             $table->uuid();
             $table->nullableMorphs('documentable');
+            $table->string('status')->nullable();
             $table->string('group');
             $table->string('media_path');
             $table->unsignedInteger('order')->nullable()->index();
