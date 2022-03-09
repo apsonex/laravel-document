@@ -44,7 +44,7 @@ class ImageFactoryTest extends TestCase
 
         $this->assertNotNull(Storage::get('public/' . $path));
 
-        ImageFactory::delete($path);
+        ImageFactory::deleteByPath($path, 'public');
 
         $this->assertNull(Storage::get($path));
 

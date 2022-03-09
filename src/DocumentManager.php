@@ -2,19 +2,45 @@
 
 namespace Apsonex\LaravelDocument;
 
-use Apsonex\LaravelDocument\Jobs\DeleteDocumentJob;
-use Apsonex\LaravelDocument\Models\Document as DocumentModel;
+use Apsonex\LaravelDocument\Jobs\MakeImageVariationsJob;
+use Apsonex\LaravelDocument\Models\Document;
 use Apsonex\LaravelDocument\Support\DocumentFactory;
 use Apsonex\LaravelDocument\Support\ImageFactory;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Storage;
 
 class DocumentManager
 {
 
-    public function saveImageFor($model, UploadedFile $file, $public = true, $variations = []): DocumentModel
+    protected bool $queue = false;
+
+    protected DocumentFactory $factory;
+
+    public function __construct(DocumentFactory $factor)
     {
-        return DocumentFactory::saveImageFor($model, $file, $public, $variations);
+        $this->factory = $factor;
+    }
+
+    public function queue(): static
+    {
+        $this->queue = true;
+
+        return $this;
+    }
+
+    public function saveImageFor($model, UploadedFile $file, $public = true, $variations = []): Document
+    {
+        return $this->factory
+            ->queue($this->queue)
+            ->saveImageFor($model, $file, $public, $variations);
+    }
+
+    public function makeVariations(Document $document, $variations = [])
+    {
+        $document->update([
+            'variations' => $this->factory->makeVariations($document, $variations)
+        ]);
     }
 
     public function imageFactory(UploadedFile|string $file): ImageFactory
@@ -22,18 +48,8 @@ class DocumentManager
         return ImageFactory::make($file);
     }
 
-    public static function delete(DocumentModel|int $document): bool
+    public static function delete(Document|int $document): bool
     {
-        $document = is_object($document) ? $document : DocumentManager::whereId($document)->firstOrFail();
-
-        return ImageFactory::delete($document->path, $document->visibility);
+        return Storage::disk($document->diskName())->delete($document->path);
     }
-
-    public static function deleteById(array|int $ids): void
-    {
-        if ($ids) {
-            DeleteDocumentJob::dispatch(Arr::wrap($ids));
-        }
-    }
-
 }

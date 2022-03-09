@@ -34,7 +34,7 @@ class DeleteDocumentsAction
         /**
          * First we remove all the variations from storage
          */
-        foreach ($doc->variations as $variation) {
+        foreach ($doc->variations ?: [] as $name => $variation) {
             Storage::disk(
                 $variation['visibility'] === 'public' ? 'public' : 'private'
             )->delete($variation['path']);

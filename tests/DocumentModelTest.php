@@ -65,7 +65,7 @@ class DocumentModelTest extends TestCase
             'dimension:100x100,name'
         ];
 
-        $document = DocumentFactory::saveImageFor($model, $this->testFile('food-hd.jpg'), true, $variations);
+        $document = DocumentFactory::make()->saveImageFor($model, $this->testFile('food-hd.jpg'), true, $variations);
 
         $this->assertEquals(get_class($model), $document->documentable_type);
 
@@ -85,18 +85,19 @@ class DocumentModelTest extends TestCase
 
         $variations = [
             'facebook',
-            'twitter',
-            'thumbnail',
-            'dimension:100x100,name'
         ];
 
-        $document = DocumentFactory::saveImageFor($model, $this->testFile('food-hd.jpg'), true, $variations);
+        $document = DocumentFactory::make()->saveImageFor($model, $this->testFile('food-hd.jpg'), true, $variations);
 
-        $this->assertNotEmpty(File::allFiles(__DIR__ . '/../vendor/orchestra/testbench-core/laravel/storage/app/public'));
+        $this->assertNotEmpty(
+            File::allFiles(
+                $dir = str($document->fullPath())->beforeLast('/')
+            )
+        );
 
         DeleteDocumentsAction::execute($document->id);
 
-        $this->assertEmpty(File::allFiles(__DIR__ . '/../vendor/orchestra/testbench-core/laravel/storage/app/public'));
+        $this->assertEmpty(File::allFiles($dir));
     }
 
 }

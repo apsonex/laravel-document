@@ -2,15 +2,20 @@
 
 namespace Apsonex\LaravelDocument\Facades;
 
+use Apsonex\LaravelDocument\DocumentManager;
+use Apsonex\LaravelDocument\Models\Document as DocumentModel;
+use Apsonex\LaravelDocument\Support\ImageFactory;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Facade;
 
 
 /**
- * @method static \Apsonex\LaravelDocument\Models\Document saveImageFor($model, UploadedFile $file, bool $public, array $variations)
- * @method static \Apsonex\LaravelDocument\Support\ImageFactory imageFactory(UploadedFile|string $file)
- * @method static bool delete(\Apsonex\LaravelDocument\Models\Document|int $document)
+ * @method static DocumentManager queue()
+ * @method static DocumentModel saveImageFor($model, UploadedFile $file, bool $public, array $variations)
+ * @method static ImageFactory imageFactory(UploadedFile|string $file)
+ * @method static bool delete(DocumentModel|int $document)
  * @method static void deleteById(array|int $ids)
+ * @method static void makeVariations(\Apsonex\LaravelDocument\Models\Document $ids, array $variations)
  */
 class Document extends Facade
 {

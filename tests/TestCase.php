@@ -5,11 +5,14 @@ namespace Apsonex\LaravelDocument\Tests;
 
 
 use Apsonex\LaravelDocument\DocumentServiceProvider;
+use Apsonex\LaravelDocument\Models\Document;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
 
 class TestCase extends OrchestraTestCase
@@ -83,12 +86,44 @@ class TestCase extends OrchestraTestCase
 
     protected function cleanStorage()
     {
-        \Illuminate\Support\Facades\File::deleteDirectory(__DIR__ . '/../vendor/orchestra/testbench-core/laravel/storage/app/public');
+        \Illuminate\Support\Facades\File::deleteDirectory(
+            $this->getPublicStoragePath()
+        );
     }
 
-    protected function testFile($name): UploadedFile
+    protected function getPublicStoragePath(): string
     {
-        return (new UploadedFile(__DIR__ . '/fixtures/' . $name,$name, null, true));
+        return __DIR__ . '/../vendor/orchestra/testbench-core/laravel/storage/app/public';
     }
 
+    /**
+     * @param string $name
+     * @return UploadedFile
+     */
+    protected function testFile(string $name): UploadedFile
+    {
+        return (new UploadedFile(__DIR__ . '/fixtures/' . $name, $name, null, true));
+    }
+
+
+    protected function seedDummyDocument($path, UploadedFile $file)
+    {
+        Storage::disk('public')->put($path, $file, 'public');
+
+        return Document::create([
+            'documentable_id'   => null,
+            'documentable_type' => null,
+            'status'            => null,
+            'group'             => 'default',
+            'media_path'        => Str::uuid(),
+            'order'             => 0,
+            'type'              => str($file->getMimeType())->startsWith('image/') ? 'image' : 'document',
+            'mime'              => $file->getMimeType(),
+            'path'              => $path,
+            'disk'              => 'public',
+            'visibility'        => 'public',
+            'size'              => Storage::disk('public')->size($path),
+            'variations'        => []
+        ]);
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace Apsonex\LaravelDocument\Support;
 
+use Apsonex\LaravelDocument\Models\Document;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Storage;
@@ -17,16 +18,27 @@ class ImageFactory
     protected array $variations = [];
 
     protected Collection $variationDimensions;
+    protected bool $queue = false;
 
     public static function make(UploadedFile|string $file): static
     {
         $self = (new static());
 
-        $self->variationDimensions = collect([]);
+        return $self->init($file);
+    }
 
-        $self->image = (new ImageManager(['driver' => 'imagick']))->make($file);
+    public function init($file): static
+    {
+        $this->variationDimensions = collect([]);
 
-        return $self;
+        $this->image = (new ImageManager(['driver' => 'imagick']))->make($file);
+
+        return $this;
+    }
+
+    public static function deleteByPath(string $path, string $diskName = 'public'): bool
+    {
+        return Storage::disk($diskName)->delete($path);
     }
 
     public function public(): static
@@ -71,11 +83,31 @@ class ImageFactory
         return $this;
     }
 
+    public function getImage(): \Intervention\Image\Image
+    {
+        return $this->image;
+    }
+
     public function saveWithVariations($path, $variations = []): array
     {
         $data = $this->save($path, $this->image);
 
-        $variations = ParseVariations::parse($variations);
+        return [
+            ...$data,
+            'variations' => $this->onlyVariations($data['directory'], $variations),
+        ];
+    }
+
+    public function parseVariations($variations): Collection
+    {
+        return ParseVariations::parse($variations);
+    }
+
+    public function onlyVariations(string $directory, $variations): array
+    {
+        $processedVariations = [];
+
+        $variations = $this->parseVariations($variations);
 
         if ($variations->isNotEmpty()) {
             $this->image->backup();
@@ -86,16 +118,16 @@ class ImageFactory
                     ...$variation,
                     'batch'     => $batch,
                     'name'      => $name,
-                    'directory' => $data['directory'],
+                    'directory' => $directory,
                 ];
 
-                $data['variations'][$name] = $this->saveVariation($variation, $this->image);
+                $processedVariations[$name] = $this->saveVariation($variation, $this->image);
 
                 $this->image->reset();
             }
         }
 
-        return $data;
+        return $processedVariations;
     }
 
     public function saveVariation($variation, \Intervention\Image\Image $image = null): array
@@ -104,7 +136,7 @@ class ImageFactory
 
         $fileName = str($image->basename)->beforeLast('.')->toString();
 
-        $directory = $variation['directory'] . '/variations';
+        $directory = $variation['directory'] . '/' . Document::VARIATION_DIR;
 
         $path = vsprintf('%s/%s.%s', [
             $directory,
@@ -162,15 +194,9 @@ class ImageFactory
         return $this->variations;
     }
 
-    public static function delete(string $path, $private = false): bool
-    {
-        return static::disk(
-            static::diskName($private)
-        )->delete($path);
-    }
-
     protected static function disk($private): \Illuminate\Contracts\Filesystem\Filesystem
     {
+        //
         return Storage::disk(
             static::diskName($private)
         );

@@ -2,16 +2,32 @@
 
 namespace Apsonex\LaravelDocument\Support;
 
+use Apsonex\LaravelDocument\Jobs\MakeImageVariationsJob;
 use Apsonex\LaravelDocument\Models\Document;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
 class DocumentFactory
 {
 
-    public static function saveImageFor($model, UploadedFile $file, $public = true, $variations = [])
+    protected bool $queue = false;
+
+    public static function make(): static
     {
-        $imageFactory = ImageFactory::make($file);
+        return new static();
+    }
+
+    public function queue($queue = true): static
+    {
+        $this->queue = $queue;
+
+        return $this;
+    }
+
+    public function saveImageFor($model, UploadedFile $file, $public = true, $variations = []): Document
+    {
+        $imageFactory = $this->makeImageFactory($file);
 
         $public ? $imageFactory->public() : $imageFactory->private();
 
@@ -19,13 +35,54 @@ class DocumentFactory
 
         $path = vsprintf("%s/%s", [$model->media_path ?? md5(Str::uuid()), str($baseName . ' ' . now()->getTimestamp())->slug()->toString() . '.jpg']);
 
-        $data = $imageFactory->saveWithVariations($path, $variations);
-
-        return Document::create([
-            ...$data,
+        $data = [
             'documentable_type' => get_class($model),
             'documentable_id'   => $model->id,
-        ]);
+            'type'              => 'image',
+        ];
+
+        if ($this->queue) {
+            $document = $this->createDocument(
+                $imageFactory->save($path, $imageFactory->getImage())
+            );
+
+            $this->queueToMakeDocumentVariations($document->id, $variations);
+
+            return $document;
+        }
+
+        $data = array_merge($data, $imageFactory->saveWithVariations($path, $variations));
+
+        return $this->createDocument(
+            $data
+        );
+    }
+
+    public function makeVariations(Document $document, $variations = []): array
+    {
+        $imageFactory = $this->makeImageFactory($document->fullPath());
+
+        return $imageFactory->onlyVariations(
+            str($document->path)->beforeLast('/'),
+            $variations
+        );
+    }
+
+    public function queueToMakeDocumentVariations(array|int $ids, $variations): void
+    {
+        foreach (Arr::wrap($ids) as $id) {
+            MakeImageVariationsJob::dispatch($id, $variations);
+        }
+    }
+
+    public function createDocument($data): Document
+    {
+        return Document::create($data);
+    }
+
+    public function makeImageFactory($file): ImageFactory
+    {
+        return ImageFactory::make($file);
     }
 
 }
