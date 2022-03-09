@@ -1,15 +1,15 @@
 <?php
 
-namespace Apsonex\Document\Facades;
+namespace Apsonex\LaravelDocument\Facades;
 
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Facade;
 
 
 /**
- * @method static \Apsonex\Document\Models\Document saveImageFor($model, UploadedFile $file, bool $public, array $variations)
- * @method static \Apsonex\Document\Support\ImageFactory imageFactory(UploadedFile|string $file)
- * @method static bool delete(\Apsonex\Document\Models\Document|int $document)
+ * @method static \Apsonex\LaravelDocument\Models\Document saveImageFor($model, UploadedFile $file, bool $public, array $variations)
+ * @method static \Apsonex\LaravelDocument\Support\ImageFactory imageFactory(UploadedFile|string $file)
+ * @method static bool delete(\Apsonex\LaravelDocument\Models\Document|int $document)
  * @method static void deleteById(array|int $ids)
  */
 class Document extends Facade

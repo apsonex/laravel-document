@@ -1,6 +1,6 @@
 <?php
 
-namespace Apsonex\Document;
+namespace Apsonex\LaravelDocument;
 
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
@@ -24,7 +24,7 @@ class DocumentServiceProvider extends ServiceProvider
     {
         $this->mergeConfigFrom(self::CONFIG_PATH, 'document');
 
-        $this->app->bind('document', fn() => new \Apsonex\Document\DocumentManager());
+        $this->app->bind('document', fn() => new \Apsonex\LaravelDocument\DocumentManager());
     }
 
 

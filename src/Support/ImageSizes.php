@@ -1,6 +1,6 @@
 <?php
 
-namespace Apsonex\Document\Support;
+namespace Apsonex\LaravelDocument\Support;
 
 enum ImageSizes: string
 {

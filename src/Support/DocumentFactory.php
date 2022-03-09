@@ -1,8 +1,8 @@
 <?php
 
-namespace Apsonex\Document\Support;
+namespace Apsonex\LaravelDocument\Support;
 
-use Apsonex\Document\Models\Document;
+use Apsonex\LaravelDocument\Models\Document;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;
 

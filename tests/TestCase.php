@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Apsonex\Document\Tests;
+namespace Apsonex\LaravelDocument\Tests;
 
 
-use Apsonex\Document\DocumentServiceProvider;
+use Apsonex\LaravelDocument\DocumentServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
 use Illuminate\Http\UploadedFile;

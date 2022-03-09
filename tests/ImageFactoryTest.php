@@ -1,8 +1,8 @@
 <?php
 
-namespace Apsonex\Document\Tests;
+namespace Apsonex\LaravelDocument\Tests;
 
-use Apsonex\Document\Support\ImageFactory;
+use Apsonex\LaravelDocument\Support\ImageFactory;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 

@@ -1,10 +1,10 @@
 <?php
 
-namespace Apsonex\Document\Tests;
+namespace Apsonex\LaravelDocument\Tests;
 
-use Apsonex\Document\Actions\DeleteDocumentsAction;
-use Apsonex\Document\Models\Document;
-use Apsonex\Document\Support\DocumentFactory;
+use Apsonex\LaravelDocument\Actions\DeleteDocumentsAction;
+use Apsonex\LaravelDocument\Models\Document;
+use Apsonex\LaravelDocument\Support\DocumentFactory;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;

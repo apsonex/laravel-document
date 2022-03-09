@@ -18,8 +18,8 @@
   },
   "autoload": {
     "psr-4": {
-      "Apsonex\\Document\\": "src",
-      "Apsonex\\Document\\Database\\Factories\\": "database/factories"
+      "Apsonex\\LaravelDocument\\": "src",
+      "Apsonex\\LaravelDocument\\Database\\Factories\\": "database/factories"
     },
     "files": [
       "src/helpers.php"
@@ -27,7 +27,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Apsonex\\Document\\Tests\\": "tests"
+      "Apsonex\\LaravelDocument\\Tests\\": "tests"
     }
   },
   "scripts": {},
@@ -40,10 +40,10 @@
   "extra": {
     "laravel": {
       "providers": [
-        "Apsonex\\Document\\DocumentServiceProvider"
+        "Apsonex\\LaravelDocument\\DocumentServiceProvider"
       ],
       "aliases": {
-        "Document": "Apsonex\\Document\\Facades\\Document"
+        "Document": "Apsonex\\LaravelDocument\\Facades\\Document"
       }
     }
   },

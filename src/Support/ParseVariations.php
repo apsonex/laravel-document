@@ -1,6 +1,6 @@
 <?php
 
-namespace Apsonex\Document\Support;
+namespace Apsonex\LaravelDocument\Support;
 
 use Illuminate\Support\Collection;
 

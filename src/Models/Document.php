@@ -1,6 +1,6 @@
 <?php
 
-namespace Apsonex\Document\Models;
+namespace Apsonex\LaravelDocument\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;

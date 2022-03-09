@@ -1,8 +1,8 @@
 <?php
 
-namespace Apsonex\Document\Actions;
+namespace Apsonex\LaravelDocument\Actions;
 
-use Apsonex\Document\Models\Document;
+use Apsonex\LaravelDocument\Models\Document;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;

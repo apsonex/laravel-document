@@ -1,6 +1,6 @@
 <?php
 
-namespace Apsonex\Document\Tests;
+namespace Apsonex\LaravelDocument\Tests;
 
 use Illuminate\Database\Eloquent\Model;
 

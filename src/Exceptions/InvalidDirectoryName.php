@@ -1,6 +1,6 @@
 <?php
 
-namespace Apsonex\Document\Exceptions;
+namespace Apsonex\LaravelDocument\Exceptions;
 
 class InvalidDirectoryName extends \Exception
 {

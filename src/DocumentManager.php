@@ -1,11 +1,11 @@
 <?php
 
-namespace Apsonex\Document;
+namespace Apsonex\LaravelDocument;
 
-use Apsonex\Document\Jobs\DeleteDocumentJob;
-use Apsonex\Document\Models\Document as DocumentModel;
-use Apsonex\Document\Support\DocumentFactory;
-use Apsonex\Document\Support\ImageFactory;
+use Apsonex\LaravelDocument\Jobs\DeleteDocumentJob;
+use Apsonex\LaravelDocument\Models\Document as DocumentModel;
+use Apsonex\LaravelDocument\Support\DocumentFactory;
+use Apsonex\LaravelDocument\Support\ImageFactory;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Arr;
 

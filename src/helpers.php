@@ -1,7 +1,7 @@
 <?php
 
 if (!function_exists('document')) {
-    function document(): \Apsonex\Document\DocumentManager
+    function document(): \Apsonex\LaravelDocument\DocumentManager
     {
         return app('document');
     }

@@ -1,9 +1,9 @@
 <?php
 
-namespace Apsonex\Document\Support;
+namespace Apsonex\LaravelDocument\Support;
 
-use Apsonex\Document\Exceptions\InvalidDirectoryName;
-use Apsonex\Document\Exceptions\PathAlreadyExists;
+use Apsonex\LaravelDocument\Exceptions\InvalidDirectoryName;
+use Apsonex\LaravelDocument\Exceptions\PathAlreadyExists;
 
 class TemporaryDirectory
 {

@@ -1,9 +1,8 @@
 <?php
 
-namespace Apsonex\Document\Tests;
+namespace Apsonex\LaravelDocument\Tests;
 
-use Apsonex\Document\DocumentManager;
-use Apsonex\Document\Facades\Document;
+use Apsonex\LaravelDocument\DocumentManager;
 
 class DocumentBindingTest extends TestCase
 {
