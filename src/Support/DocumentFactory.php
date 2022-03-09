@@ -49,7 +49,7 @@ class DocumentFactory
 
         if ($this->queue) {
             $document = $this->createDocument(
-                $imageFactory->save($path, $imageFactory->getImage())
+                array_merge($data, $imageFactory->save($path, $imageFactory->getImage()))
             );
 
             $this->queueToMakeDocumentVariations($document->id, $variations);
