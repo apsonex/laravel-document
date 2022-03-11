@@ -45,6 +45,7 @@ class DocumentFactory
             'documentable_type' => get_class($model),
             'documentable_id'   => $model->id,
             'type'              => 'image',
+            'added_by'          => auth()->check() ? auth()->id() : null,
         ];
 
         if ($this->queue === true) {
