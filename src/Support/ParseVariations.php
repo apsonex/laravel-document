@@ -7,6 +7,13 @@ use Illuminate\Support\Collection;
 class ParseVariations
 {
 
+    /**
+     * dimension:100x100,filename
+     * 100x100
+     *
+     * @param $variations
+     * @return Collection
+     */
     public static function parse($variations): Collection
     {
         $parsed = [];
@@ -32,7 +39,8 @@ class ParseVariations
 
             if ($enum && ($dimension = $enum->getConstant($upper))) {
                 $dims = str($dimension)->explode('x');
-                $parsed[$prefix = strtolower($variation)] = [
+                $prefix = strtolower($variation);
+                $parsed[$prefix] = [
                     'name'   => $prefix,
                     'width'  => (int)$dims[0],
                     'height' => (int)$dims[1]

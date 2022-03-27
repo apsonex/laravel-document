@@ -2,6 +2,8 @@
 
 namespace Apsonex\LaravelDocument\Models;
 
+use Apsonex\SaasUtils\Facades\DiskProvider;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Illuminate\Http\UploadedFile;
@@ -49,6 +51,10 @@ class Document extends Model
             $doc->order ??= 1;
             $doc->media_path ??= md5(Str::uuid());
         });
+
+        static::deleting(function (self $doc) {
+            \Apsonex\LaravelDocument\Facades\Document::delete($doc, true);
+        });
     }
 
     public function documentable(): MorphTo
@@ -75,7 +81,9 @@ class Document extends Model
 
     public function getUrl($path): string
     {
-        return asset(Storage::disk($this->visibility === 'public' ? 'public' : 'private')->url($path));
+        return asset(
+            $this->diskInstance()->url($path)
+        );
     }
 
     public function isPublicDisk(): bool
@@ -96,5 +104,12 @@ class Document extends Model
     public function variationsDirectory(): string
     {
         return \str($this->fullPath())->beforeLast('/') . '/' . static::VARIATION_DIR;
+    }
+
+    public function diskInstance(): Filesystem
+    {
+        return DiskProvider::byVisibility(
+            $this->visibility === 'public' ? 'public' : 'private'
+        );
     }
 }

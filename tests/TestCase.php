@@ -6,6 +6,8 @@ namespace Apsonex\LaravelDocument\Tests;
 
 use Apsonex\LaravelDocument\DocumentServiceProvider;
 use Apsonex\LaravelDocument\Models\Document;
+use Apsonex\Mls\MlsServiceProvider;
+use Apsonex\SaasUtils\SaasUtilsServiceProvider;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Foundation\Bootstrap\LoadEnvironmentVariables;
 use Illuminate\Http\UploadedFile;
@@ -42,7 +44,13 @@ class TestCase extends OrchestraTestCase
         );
 
         config([
-            'queue.default' => 'database',
+            'queue.default'             => 'database',
+            'filesystems.disks.private' => [
+                'driver'     => 'local',
+                'root'       => storage_path('app/private'),
+                'url'        => env('APP_URL') . '/storage',
+                'visibility' => 'private',
+            ]
         ]);
 
 
@@ -52,7 +60,9 @@ class TestCase extends OrchestraTestCase
     protected function getPackageProviders($app): array
     {
         return [
-            DocumentServiceProvider::class
+            DocumentServiceProvider::class,
+            SaasUtilsServiceProvider::class,
+            MlsServiceProvider::class
         ];
     }
 
@@ -87,13 +97,23 @@ class TestCase extends OrchestraTestCase
     protected function cleanStorage()
     {
         \Illuminate\Support\Facades\File::deleteDirectory(
+            $this->getprivateStoragePath()
+        );
+
+        \Illuminate\Support\Facades\File::deleteDirectory(
             $this->getPublicStoragePath()
         );
     }
 
+
     protected function getPublicStoragePath(): string
     {
         return __DIR__ . '/../vendor/orchestra/testbench-core/laravel/storage/app/public';
+    }
+
+    protected function getPrivateStoragePath(): string
+    {
+        return __DIR__ . '/../vendor/orchestra/testbench-core/laravel/storage/app/private';
     }
 
     /**

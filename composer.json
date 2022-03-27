@@ -8,9 +8,12 @@
   ],
   "require": {
     "php": "^8.1",
+    "apsonex/saas-utils": "dev-master",
     "intervention/image": "^2.7"
   },
   "require-dev": {
+    "apsonex/mls": "dev-master",
+    "apsonex/mls-data": "dev-main",
     "fakerphp/faker": "^1.19",
     "nunomaduro/collision": "^6.1",
     "orchestra/testbench": "^7.1",
@@ -47,8 +50,36 @@
       }
     }
   },
-  "repositories": [
-  ],
   "minimum-stability": "dev",
-  "prefer-stable": true
+  "prefer-stable": true,
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "git@github.com:apsonex/mls-parser.git"
+    },
+    {
+      "type": "vcs",
+      "url": "git@github.com:apsonex/mls.git"
+    },
+    {
+      "type": "vcs",
+      "url": "git@github.com:apsonex/mls-data.git"
+    },
+    {
+      "type": "vcs",
+      "url": "git@github.com:apsonex/rets.git"
+    },
+    {
+      "type": "vcs",
+      "url": "git@github.com:apsonex/countries.git"
+    },
+    {
+      "type": "vcs",
+      "url": "git@github.com:apsonex/laravel-document.git"
+    },
+    {
+      "type": "vcs",
+      "url": "git@github.com:apsonex/saas-utils.git"
+    }
+  ]
 }

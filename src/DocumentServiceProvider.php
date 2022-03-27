@@ -2,6 +2,7 @@
 
 namespace Apsonex\LaravelDocument;
 
+use Apsonex\LaravelDocument\Support\DocumentFactory;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\ServiceProvider;
 
@@ -25,7 +26,7 @@ class DocumentServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(self::CONFIG_PATH, 'document');
 
         $this->app->bind('document', function () {
-            return resolve(DocumentManager::class);
+            return new DocumentFactory();
         });
     }
 

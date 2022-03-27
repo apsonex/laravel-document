@@ -2,13 +2,15 @@
 
 namespace Apsonex\LaravelDocument\Tests;
 
-use Apsonex\LaravelDocument\Actions\DeleteDocumentsAction;
-use Apsonex\LaravelDocument\Models\Document;
-use Apsonex\LaravelDocument\Support\DocumentFactory;
+use Apsonex\LaravelDocument\Support\PendingDocument\PendingDocument;
+use Apsonex\LaravelDocument\Tests\fixtures\TestModel;
+use Apsonex\Mls\Models\Listing;
+use Apsonex\SaasUtils\Facades\DiskProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use League\Flysystem\Filesystem;
 
 class DocumentModelTest extends TestCase
 {
@@ -21,55 +23,58 @@ class DocumentModelTest extends TestCase
     }
 
     /** @test */
-    public function it_persist_images_to_database()
+    public function it_upload_image_to_database_and_to_storage_with_variations()
     {
-        $data = [
-            'order'             => 0,
-            'documentable_type' => '\App\Model\Random',
-            'documentable_id'   => 1,
-            'type'              => 'image',
-            'mime'              => 'image/jpg',
-            'name'              => 'FileName',
-            'file_name'         => 'FileName.jpeg',
-            'disk'              => 'public',
-            'path'              => 'image/path',
-            'size'              => 12345,
-            'visibility'        => 'public',
-            'variations'        => [],
-        ];
-        $this->assertDatabaseCount(Document::class, 0);
+        $document = $this->createDocument();
 
-        $document = Document::create($data);
-
-        $this->assertIsArray($document->variations);
-
-        $this->assertDatabaseCount(Document::class, 1);
+        $this->assertEquals(1, $document->documentable_id);
     }
 
-
     /** @test */
-    public function it_upload_image_to_database_and_to_storage_with_variations()
+    public function it_can_update_image_document()
     {
         $this->cleanStorage();
 
-        $model = (new \stdClass());
+        $document = $this->createDocument($path = 'random-path');
 
-        $model->id = 1;
+        $previousData = $document->toArray();
 
-        $model->media_path = md5(Str::uuid()->toString());
+        $path = storage_path('app/public' . '/' . $path);
+
+        $this->assertCount(2, File::allFiles($path));
+
+        /** @var Filesystem $filesystem */
+        $filesystem = $document->diskInstance();
+
+        foreach ($previousData['variations'] as $variation) {
+            $this->assertTrue($filesystem->fileExists($variation['path']));
+        }
 
         $variations = [
-            'facebook',
             'twitter',
-            'thumbnail',
             'dimension:100x100,name'
         ];
 
-        $document = DocumentFactory::make()->saveImageFor($model, $this->testFile('food-hd.jpg'), true, $variations);
+        $pendingDoc = (new PendingDocument)
+            ->imageSource($this->testFile('food-hd.jpg'))
+            ->withoutOriginal()
+            ->basename('new-name')
+            ->setVariations($variations)
+            ->setDirectory($document->media_path)
+            ->visibilityPublic()
+            ->disk($document->diskInstance());
 
-        $this->assertEquals(get_class($model), $document->documentable_type);
+        $document = \Apsonex\LaravelDocument\Facades\Document::persist($pendingDoc, $document);
 
-        $this->assertEquals($model->id, $document->documentable_id);
+        foreach ($previousData['variations'] as $variation) {
+            $this->assertFalse($filesystem->fileExists($variation['path']));
+        }
+
+        foreach ($document->variations as $variation) {
+            $this->assertTrue($filesystem->fileExists($variation['path']));
+        }
+
+        $this->cleanStorage();
     }
 
     /** @test */
@@ -77,27 +82,49 @@ class DocumentModelTest extends TestCase
     {
         $this->cleanStorage();
 
-        $model = (new \stdClass());
+        $document = $this->createDocument($path = 'random-path');
 
-        $model->id = 1;
+        $path = storage_path('app/public' . '/' . $path);
 
-        $model->media_path = md5(Str::uuid()->toString());
+        $this->assertCount(2, File::allFiles($path));
+
+        $document->delete();
+
+        $this->assertFalse(File::isDirectory($path));
+    }
+
+
+    protected function createDocument($path = null, $model = null): \Apsonex\LaravelDocument\Models\Document
+    {
+        $this->cleanStorage();
+
+        $model = (new TestModel())->forceFill([
+            'id'         => 1,
+            'media_path' => md5(Str::uuid()->toString()),
+        ]);
 
         $variations = [
             'facebook',
+            'dimension:100x100,thumbnail'
         ];
 
-        $document = DocumentFactory::make()->saveImageFor($model, $this->testFile('food-hd.jpg'), true, $variations);
+        $listing = (new Listing())->forceFill([
+            'id'         => 1,
+            'media_path' => $path ?: 'listings/media-path',
+        ]);
 
-        $this->assertNotEmpty(
-            File::allFiles(
-                $dir = str($document->fullPath())->beforeLast('/')
-            )
-        );
+        $pendingDoc = (new PendingDocument)
+            ->imageSource($this->testFile('food-hd.jpg'))
+            ->basename('gurinder')
+            ->parentModel($listing)
+            ->withoutOriginal()
+            ->setDirectory($listing->media_path)
+            ->setVariations($variations)
+            ->setAddedBy(auth()->id())
+            ->visibilityPublic()
+            ->disk(DiskProvider::public());
 
-        DeleteDocumentsAction::execute($document->id);
-
-        $this->assertEmpty(File::allFiles($dir));
+        return \Apsonex\LaravelDocument\Facades\Document::persist($pendingDoc);
     }
 
 }

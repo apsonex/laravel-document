@@ -3,27 +3,107 @@
 namespace Apsonex\LaravelDocument\Tests;
 
 use Apsonex\LaravelDocument\Support\ImageFactory;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
+use Apsonex\LaravelDocument\Support\ParseVariations;
+use Apsonex\Rets\Models\BaseObject;
+use Apsonex\SaasUtils\Facades\DiskProvider;
+use Illuminate\Support\Facades\File;
 
 class ImageFactoryTest extends TestCase
 {
 
     /** @test */
-    public function it_upload_image_to_disk()
+    public function it_can_parse_image_variations()
     {
-        $file = $this->testFile('test.jpg');
+        $data = ParseVariations::parse([
+            'dimension:100x100,filename',
+            'FACEBOOK',
+        ])->toArray();
 
-        $path = vsprintf("%s/%s", [
-            md5(Str::uuid()),
-            md5(Str::uuid()) . '.jpg',
-        ]);
+        $this->assertEquals(100, $data['filename']['width']);
+        $this->assertEquals(100, $data['filename']['height']);
 
-        ImageFactory::make($file)
-            ->encode($file->getClientOriginalExtension())
-            ->save($path);
+        $this->assertEquals(1200, $data['facebook']['width']);
+        $this->assertEquals(675, $data['facebook']['height']);
+    }
 
-        $this->assertNotNull(Storage::get('public/' . $path));
+    /** @test */
+    public function it_upload_rets_object_image_to_disk()
+    {
+        /** @var BaseObject $baseObject */
+        $baseObject = mls_data()->testImagesResponse(1)->first();
+
+        $variations = [
+            'dimension:100x100,filename',
+            'FACEBOOK',
+        ];
+
+        $data = ImageFactory::forRetsBaseObject($baseObject)
+            ->variations($variations)
+            ->visibilityPublic()
+            ->disk(DiskProvider::public())
+            ->directory('some-dir')
+            ->basename('image-name')
+            ->persist();
+
+        $this->assertSame(100, $data['variations']['filename']['width']);
+        $this->assertSame(100, $data['variations']['filename']['height']);
+
+        $this->assertSame(1200, $data['variations']['facebook']['width']);
+        $this->assertSame(675, $data['variations']['facebook']['height']);
+
+        $this->cleanStorage();
+    }
+
+    /** @test */
+    public function it_upload_file_image_to_disk()
+    {
+        $this->cleanStorage();
+
+        $variations = [
+            'dimension:100x100,filename',
+            'FACEBOOK',
+        ];
+
+        $data = ImageFactory::make($this->testFile('food-hd-long.jpg'))
+            ->variations($variations)
+            ->visibilityPublic()
+            ->disk(DiskProvider::public())
+            ->directory('some')
+            ->basename('image-name')
+            ->persist();
+
+        $this->assertSame(100, $data['variations']['filename']['width']);
+        $this->assertSame(100, $data['variations']['filename']['height']);
+
+        $this->assertSame(1200, $data['variations']['facebook']['width']);
+        $this->assertSame(675, $data['variations']['facebook']['height']);
+
+        $this->cleanStorage();
+    }
+
+    /** @test */
+    public function it_upload_string_image_to_disk()
+    {
+        $this->cleanStorage();
+
+        $variations = [
+            'dimension:100x100,filename',
+            'FACEBOOK',
+        ];
+
+        $data = ImageFactory::make($this->testFile('food-hd-long.jpg')->getContent())
+            ->variations($variations)
+            ->visibilityPublic()
+            ->disk(DiskProvider::public())
+            ->directory('some')
+            ->basename('image-name')
+            ->persist();
+
+        $this->assertSame(100, $data['variations']['filename']['width']);
+        $this->assertSame(100, $data['variations']['filename']['height']);
+
+        $this->assertSame(1200, $data['variations']['facebook']['width']);
+        $this->assertSame(675, $data['variations']['facebook']['height']);
 
         $this->cleanStorage();
     }
@@ -31,53 +111,32 @@ class ImageFactoryTest extends TestCase
     /** @test */
     public function it_remove_the_file_from_storage()
     {
-        $file = $this->testFile('test.jpg');
-
-        $path = vsprintf("%s/%s", [
-            md5(Str::uuid()),
-            md5(Str::uuid()) . '.jpg',
-        ]);
-
-        ImageFactory::make($file)
-            ->encode($file->getClientOriginalExtension())
-            ->save($path);
-
-        $this->assertNotNull(Storage::get('public/' . $path));
-
-        ImageFactory::deleteByPath($path, 'public');
-
-        $this->assertNull(Storage::get($path));
-
-        $this->cleanStorage();
-    }
-
-    /** @test */
-    public function it_can_store_variations_to_the_disk()
-    {
         $this->cleanStorage();
 
-        $file = $this->testFile('food-hd.jpg');
+        File::ensureDirectoryExists($this->getPublicStoragePath());
 
-        $prefix = md5(Str::uuid());
-
-        $path = vsprintf("%s/%s", [$prefix, md5(Str::uuid()) . '.jpg']);
-
-        $factory = ImageFactory::make($file);
+        $this->assertCount(0, File::allFiles($this->getPublicStoragePath()));
 
         $variations = [
-            'facebook',
-            'twitter',
-            'thumbnail',
-            'dimension:100x100,name'
+            'dimension:100x100,filename',
+            'FACEBOOK',
         ];
 
-        $document = $factory->saveWithVariations($path, $variations);
+        $data = ImageFactory::make($this->testFile('food-hd-long.jpg')->getContent())
+            ->variations($variations)
+            ->visibilityPublic()
+            ->disk(DiskProvider::public())
+            ->directory('some')
+            ->basename('image-name')
+            ->persist();
 
-        $this->assertCount(count($variations), $document['variations']);
+        $this->assertCount(3, File::allFiles($this->getPublicStoragePath()));
 
-        $files = \Illuminate\Support\Facades\File::allFiles(Storage::path('public/' . $prefix));
+        ImageFactory::deleteVariations(DiskProvider::public(), $data['variations'], true);
 
-        $this->assertCount(5, $files);
+        $this->assertFalse(File::isDirectory($this->getPublicStoragePath() . '/some'));
+
+        $this->assertCount(0, File::allFiles($this->getPublicStoragePath()));
 
         $this->cleanStorage();
     }

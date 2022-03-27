@@ -2,10 +2,13 @@
 
 namespace Apsonex\LaravelDocument\Tests\fixtures;
 
-class TestModel
+use Illuminate\Database\Eloquent\Model;
+
+class TestModel extends Model
 {
 
     public int $id = 1;
+
 
     public function storagePathPrefix(): string
     {
