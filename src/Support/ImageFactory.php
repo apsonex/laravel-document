@@ -213,7 +213,9 @@ class ImageFactory
             $extension,
         ]);
 
-        $encoded = $original ? $this->getImageManager() : $this->getImageManager()->fit($width, $height)->encode($this->driver->extension());
+        $encoded = $original ?
+            $this->getImageManager()->encode($this->driver->extension()) :
+            $this->getImageManager()->fit($width, $height)->encode($this->driver->extension());
 
         $this->storageDisk->put(
             $path,
