@@ -41,7 +41,6 @@ class ImageFactoryTest extends TestCase
             ->variations($variations)
             ->visibilityPublic()
             ->disk(DiskProvider::public())
-            ->directory('some-dir')
             ->basename('image-name')
             ->persist();
 

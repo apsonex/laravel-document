@@ -118,7 +118,6 @@ class DocumentModelTest extends TestCase
             ->basename('gurinder')
             ->parentModel($listing)
             ->withoutOriginal()
-            ->setDirectory($listing->media_path)
             ->setVariations($variations)
             ->setAddedBy(auth()->id())
             ->visibilityPublic()

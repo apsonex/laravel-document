@@ -2376,25 +2376,24 @@
         },
         {
             "name": "ramsey/uuid",
-            "version": "4.2.3",
+            "version": "4.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ramsey/uuid.git",
-                "reference": "fc9bb7fb5388691fd7373cd44dcb4d63bbcf24df"
+                "reference": "8ced2afadd9ce455e2d5919d27c57e344bae4a09"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ramsey/uuid/zipball/fc9bb7fb5388691fd7373cd44dcb4d63bbcf24df",
-                "reference": "fc9bb7fb5388691fd7373cd44dcb4d63bbcf24df",
+                "url": "https://api.github.com/repos/ramsey/uuid/zipball/8ced2afadd9ce455e2d5919d27c57e344bae4a09",
+                "reference": "8ced2afadd9ce455e2d5919d27c57e344bae4a09",
                 "shasum": ""
             },
             "require": {
                 "brick/math": "^0.8 || ^0.9",
+                "ext-ctype": "*",
                 "ext-json": "*",
-                "php": "^7.2 || ^8.0",
-                "ramsey/collection": "^1.0",
-                "symfony/polyfill-ctype": "^1.8",
-                "symfony/polyfill-php80": "^1.14"
+                "php": "^8.0",
+                "ramsey/collection": "^1.0"
             },
             "replace": {
                 "rhumsaa/uuid": "self.version"
@@ -2458,7 +2457,7 @@
             ],
             "support": {
                 "issues": "https://github.com/ramsey/uuid/issues",
-                "source": "https://github.com/ramsey/uuid/tree/4.2.3"
+                "source": "https://github.com/ramsey/uuid/tree/4.3.0"
             },
             "funding": [
                 {
@@ -2470,7 +2469,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-09-25T23:10:38+00:00"
+            "time": "2022-03-26T22:00:50+00:00"
         },
         {
             "name": "stevebauman/purify",
@@ -4966,12 +4965,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:apsonex/mls.git",
-                "reference": "e71447d375578d67ee5fe98a84c46d63e09f211c"
+                "reference": "5bc7603da42ca38893b45075968741cbffcc6bb5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/apsonex/mls/zipball/e71447d375578d67ee5fe98a84c46d63e09f211c",
-                "reference": "e71447d375578d67ee5fe98a84c46d63e09f211c",
+                "url": "https://api.github.com/repos/apsonex/mls/zipball/5bc7603da42ca38893b45075968741cbffcc6bb5",
+                "reference": "5bc7603da42ca38893b45075968741cbffcc6bb5",
                 "shasum": ""
             },
             "require": {
@@ -4979,6 +4978,7 @@
                 "apsonex/laravel-document": "dev-master",
                 "apsonex/mls_parser": "dev-master",
                 "apsonex/rets": "dev-main",
+                "apsonex/saas-utils": "dev-master",
                 "apsonex/spatial": "dev-master",
                 "guzzlehttp/guzzle": "^7.2",
                 "http-interop/http-factory-guzzle": "^1.2",
@@ -5029,7 +5029,7 @@
                 "source": "https://github.com/apsonex/mls/tree/master",
                 "issues": "https://github.com/apsonex/mls/issues"
             },
-            "time": "2022-03-24T02:57:56+00:00"
+            "time": "2022-03-27T14:39:18+00:00"
         },
         {
             "name": "apsonex/mls-data",

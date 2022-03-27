@@ -61,9 +61,13 @@ class PendingDocument
     public function parentModel(Model $model): static
     {
         $this->model = $model;
-        if ($model->media_path && !$this->directory) {
-            $this->setDirectory($model->media_path);
+
+        if (!$this->directory) {
+            $this->setDirectory(
+                $this->getDirectoryPath($model)
+            );
         }
+
         return $this;
     }
 
@@ -125,6 +129,15 @@ class PendingDocument
     {
         $this->status = $status;
         return $this;
+    }
+
+    protected function getDirectoryPath($model): string
+    {
+        if (method_exists($model, 'storageDirectory')) {
+            return $model->storageDirectory();
+        }
+
+        return property_exists($model, 'media_path') ? $model->media_path : '/';
     }
 
 }
