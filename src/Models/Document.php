@@ -73,11 +73,14 @@ class Document extends Model
             ];
         }
 
+        // return $data;
+
         return [
             ...$data,
-            'url' => $this->getUrl($data['path']),
+            'url' => str($data['path'])->contains('.') ? $this->getUrl($data['path']) : null,
         ];
     }
+
 
     public function getUrl($path): string
     {
