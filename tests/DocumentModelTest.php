@@ -57,7 +57,6 @@ class DocumentModelTest extends TestCase
 
         $pendingDoc = (new PendingDocument)
             ->imageSource($this->testFile('food-hd.jpg'))
-            ->withoutOriginal()
             ->basename('new-name')
             ->setVariations($variations)
             ->setDirectory($document->media_path)
@@ -65,6 +64,8 @@ class DocumentModelTest extends TestCase
             ->disk($document->diskInstance());
 
         $document = \Apsonex\LaravelDocument\Facades\Document::persist($pendingDoc, $document);
+
+        dd($document->toArray());
 
         foreach ($previousData['variations'] as $variation) {
             $this->assertFalse($filesystem->fileExists($variation['path']));
