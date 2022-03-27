@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Facade;
 
 /**
  * @method static DocumentModel persist(PendingDocument $pendingDocument, DocumentModel $documentToUpdate = null)
- * @method static bool delete(DocumentModel $document, $deleteEmptyDir = false)
+ * @method static bool deleteVariations(DocumentModel $document, $deleteEmptyDir = false)
  */
 class Document extends Facade
 {

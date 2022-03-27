@@ -2,6 +2,7 @@
 
 namespace Apsonex\LaravelDocument\Jobs;
 
+use Illuminate\Bus\Batchable;
 use Illuminate\Bus\Queueable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
@@ -11,7 +12,7 @@ use Apsonex\LaravelDocument\Actions\DeleteDocumentsAction;
 
 class DeleteDocumentJob implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, Batchable;
 
     public function __construct(
         public array|int $ids,
@@ -22,6 +23,11 @@ class DeleteDocumentJob implements ShouldQueue
 
     public function handle(): void
     {
+        if ($this->batch()->cancelled()) {
+            // Determine if the batch has been cancelled...
+            return;
+        }
+
         DeleteDocumentsAction::execute($this->ids);
     }
 }

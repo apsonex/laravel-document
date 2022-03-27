@@ -2,11 +2,11 @@
 
 namespace Apsonex\LaravelDocument\Models;
 
+use Apsonex\LaravelDocument\Facades\Document as DocumentFactoryFacade;
 use Apsonex\SaasUtils\Facades\DiskProvider;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
-use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -53,7 +53,7 @@ class Document extends Model
         });
 
         static::deleting(function (self $doc) {
-            \Apsonex\LaravelDocument\Facades\Document::delete($doc, true);
+            DocumentFactoryFacade::deleteVariations($doc, true);
         });
     }
 

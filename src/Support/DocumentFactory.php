@@ -24,7 +24,7 @@ class DocumentFactory
         return null;
     }
 
-    public function delete(Document $document, $deleteEmptyDir = false)
+    public function deleteVariations(Document $document, $deleteEmptyDir = false)
     {
         if ($document->type === 'image') {
             ImageFactory::deleteVariations($document->diskInstance(), $document->variations, $deleteEmptyDir);
