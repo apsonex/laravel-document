@@ -64,9 +64,7 @@ class DocumentModelTest extends TestCase
             ->disk($document->diskInstance());
 
         $document = \Apsonex\LaravelDocument\Facades\Document::persist($pendingDoc, $document);
-
-        dd($document->toArray());
-
+        
         foreach ($previousData['variations'] as $variation) {
             $this->assertFalse($filesystem->fileExists($variation['path']));
         }

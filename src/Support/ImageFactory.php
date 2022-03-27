@@ -43,19 +43,10 @@ class ImageFactory
         return $self;
     }
 
-    /**
-     * @throws Exception
-     */
     public static function forRetsBaseObject($object): static
     {
-        if (!class_exists('\Apsonex\Rets\Models\BaseObject')) {
-            throw new Exception("\Apsonex\Rets\Models\BaseObject class not exists triggered on \Apsonex\LaravelDocument\Support\ImageFactory@forRetsBaseObject", 500);
-        }
-
         $self = new static();
-
         $self->driver = new RetsBaseObjectImageDriver($object);
-
         return $self;
     }
 

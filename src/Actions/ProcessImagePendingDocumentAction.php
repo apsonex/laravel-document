@@ -5,6 +5,7 @@ namespace Apsonex\LaravelDocument\Actions;
 use Apsonex\LaravelDocument\Models\Document;
 use Apsonex\LaravelDocument\Support\ImageFactory;
 use Apsonex\LaravelDocument\Support\PendingDocument\PendingDocument;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class ProcessImagePendingDocumentAction
@@ -96,10 +97,22 @@ class ProcessImagePendingDocumentAction
 
     protected function makeImageFactory(): ImageFactory
     {
-        return match ($this->pendingDocument->srcType) {
-            'rets' => ImageFactory::forRetsBaseObject($this->pendingDocument->imageSrc),
-            default => ImageFactory::make($this->pendingDocument->imageSrc)
-        };
+        try {
+            return match ($this->pendingDocument->srcType) {
+                'rets' => ImageFactory::forRetsBaseObject($this->pendingDocument->imageSrc),
+                default => ImageFactory::make($this->pendingDocument->imageSrc)
+            };
+        } catch (\Intervention\Image\Exception\NotReadableException $e) {
+            $strings = [
+                "Image not readable at \Apsonex\LaravelDocument\Actions\ProcessImagePendingDocumentAction::class",
+            ];
+
+            if($this->document?->id) {
+                $strings[] = "Document: " . get_class($this->document) . ", ID: " . $this->document->id;
+            }
+
+            Log::alert(implode('. ', $strings));
+        }
     }
 
     protected function getAddedBy(): ?int
