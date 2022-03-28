@@ -61,10 +61,10 @@ class DocumentModelTest extends TestCase
             ->setVariations($variations)
             ->setDirectory($document->media_path)
             ->visibilityPublic()
-            ->disk($document->diskInstance());
+            ->setDisk($document->diskInstance());
 
         $document = \Apsonex\LaravelDocument\Facades\Document::persist($pendingDoc, $document);
-        
+
         foreach ($previousData['variations'] as $variation) {
             $this->assertFalse($filesystem->fileExists($variation['path']));
         }
@@ -120,7 +120,7 @@ class DocumentModelTest extends TestCase
             ->setVariations($variations)
             ->setAddedBy(auth()->id())
             ->visibilityPublic()
-            ->disk(DiskProvider::public());
+            ->setDisk(DiskProvider::public());
 
         return \Apsonex\LaravelDocument\Facades\Document::persist($pendingDoc);
     }

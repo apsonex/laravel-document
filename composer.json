@@ -12,8 +12,6 @@
     "intervention/image": "^2.7"
   },
   "require-dev": {
-    "apsonex/mls": "dev-master",
-    "apsonex/mls-data": "dev-main",
     "fakerphp/faker": "^1.19",
     "nunomaduro/collision": "^6.1",
     "orchestra/testbench": "^7.1",

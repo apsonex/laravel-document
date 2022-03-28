@@ -5,8 +5,8 @@ namespace Apsonex\LaravelDocument\Actions;
 use Apsonex\LaravelDocument\Models\Document;
 use Apsonex\LaravelDocument\Support\ImageFactory;
 use Apsonex\LaravelDocument\Support\PendingDocument\PendingDocument;
+use Apsonex\SaasUtils\Facades\DiskProvider;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 
 class ProcessImagePendingDocumentAction
 {
@@ -47,7 +47,7 @@ class ProcessImagePendingDocumentAction
     {
         $previousData = $this->pendingDocument->deletePreviousImages ? $this->document->toArray() : null;
 
-        $factory->disk($this->pendingDocument->disk ?: $this->document->diskInstance());
+        $factory->disk($this->document->diskInstance());
 
         if ($basename = $this->pendingDocument->basename) {
             $factory->basename($basename);
@@ -75,7 +75,7 @@ class ProcessImagePendingDocumentAction
     protected function createDocument(ImageFactory $factory): Document
     {
         $data = $factory
-            ->disk($this->pendingDocument->disk)
+            ->disk(DiskProvider::byVisibility($this->pendingDocument->public ? 'public' : 'private'))
             ->basename($this->pendingDocument->basename)
             ->directory($this->pendingDocument->directory)
             ->persist();
@@ -107,7 +107,7 @@ class ProcessImagePendingDocumentAction
                 "Image not readable at \Apsonex\LaravelDocument\Actions\ProcessImagePendingDocumentAction::class",
             ];
 
-            if($this->document?->id) {
+            if ($this->document?->id) {
                 $strings[] = "Document: " . get_class($this->document) . ", ID: " . $this->document->id;
             }
 

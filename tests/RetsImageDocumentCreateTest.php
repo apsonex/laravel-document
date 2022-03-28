@@ -39,7 +39,7 @@ class RetsImageDocumentCreateTest extends TestCase
             ->imageSourceRets($first)
             ->setAddedBy(1)
             ->visibilityPublic()
-            ->disk(DiskProvider::public());
+            ->setDisk(DiskProvider::public());
 
         $doc = \Apsonex\LaravelDocument\Facades\Document::persist($po);
 

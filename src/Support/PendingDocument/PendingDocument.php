@@ -83,13 +83,7 @@ class PendingDocument
         return $this;
     }
 
-    public function targetPath(string $path): static
-    {
-        $this->path = $path;
-        return $this;
-    }
-
-    public function disk(Filesystem $disk): static
+    public function setDisk(Filesystem $disk): static
     {
         $this->disk = $disk;
         return $this;

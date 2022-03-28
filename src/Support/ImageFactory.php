@@ -123,22 +123,6 @@ class ImageFactory
         return $this;
     }
 
-    //    public function path($path): static
-    //    {
-    //        $this->data['path'] = $path;
-    //
-    //        $this->setUpDirectoryAndBatch();
-    //
-    //        return $this;
-    //    }
-
-    protected function setUpDirectoryAndBatch()
-    {
-        $path = str($this->data['path']);
-
-
-    }
-
     public function visibilityPublic(): static
     {
         $this->data['visibility'] = 'public';
