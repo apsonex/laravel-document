@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:apsonex/saas-utils.git",
-                "reference": "a25f65fa65f8e7d69e05fa02f003743ed0aeaf22"
+                "reference": "719208784b8553d7f0af8403bd5fe53f7535013e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/apsonex/saas-utils/zipball/a25f65fa65f8e7d69e05fa02f003743ed0aeaf22",
-                "reference": "a25f65fa65f8e7d69e05fa02f003743ed0aeaf22",
+                "url": "https://api.github.com/repos/apsonex/saas-utils/zipball/719208784b8553d7f0af8403bd5fe53f7535013e",
+                "reference": "719208784b8553d7f0af8403bd5fe53f7535013e",
                 "shasum": ""
             },
             "require": {
@@ -70,7 +70,7 @@
                 "source": "https://github.com/apsonex/saas-utils/tree/master",
                 "issues": "https://github.com/apsonex/saas-utils/issues"
             },
-            "time": "2022-03-29T00:04:04+00:00"
+            "time": "2022-03-29T22:16:39+00:00"
         },
         {
             "name": "brick/math",
