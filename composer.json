@@ -13,6 +13,7 @@
   },
   "require-dev": {
     "fakerphp/faker": "^1.19",
+    "apsonex/mls-data": "dev-main",
     "nunomaduro/collision": "^6.1",
     "orchestra/testbench": "^7.1",
     "phpunit/phpunit": "^9.5"

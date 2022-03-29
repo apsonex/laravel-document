@@ -5,6 +5,7 @@ namespace Apsonex\LaravelDocument\Actions;
 use Apsonex\LaravelDocument\Models\Document;
 use Apsonex\LaravelDocument\Support\ImageFactory;
 use Apsonex\LaravelDocument\Support\PendingDocument\PendingDocument;
+use Apsonex\Rets\Models\BaseObject;
 use Apsonex\SaasUtils\Facades\DiskProvider;
 use Illuminate\Support\Facades\Log;
 
@@ -95,7 +96,9 @@ class ProcessImagePendingDocumentAction
         return Document::create($data);
     }
 
-    protected function makeImageFactory(): ImageFactory
+
+
+    protected function makeImageFactory(): ?ImageFactory
     {
         try {
             return match ($this->pendingDocument->srcType) {
@@ -105,6 +108,8 @@ class ProcessImagePendingDocumentAction
         } catch (\Intervention\Image\Exception\NotReadableException $e) {
             $strings = [
                 "Image not readable at \Apsonex\LaravelDocument\Actions\ProcessImagePendingDocumentAction::class",
+                "message:" . $e->getMessage(),
+                "srcType:" . $this->pendingDocument->srcType
             ];
 
             if ($this->document?->id) {
@@ -115,6 +120,7 @@ class ProcessImagePendingDocumentAction
         }
     }
 
+
     protected function getAddedBy(): ?int
     {
         if ($this->pendingDocument->addedBy) {
@@ -124,5 +130,17 @@ class ProcessImagePendingDocumentAction
         return $this->document ?
             $this->document->added_by :
             (auth()->check() ? auth()->id() : null);
+    }
+
+    /**
+     * Get rets imag error
+     */
+    protected function getsRetsError($object): bool|string
+    {
+        if ($object instanceof BaseObject && method_exists($object, 'isError') && $object->isError()) {
+            return $object->getError()->getCode() . '|' . $object->getError()->getMessage();
+        }
+
+        return false;
     }
 }

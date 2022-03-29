@@ -62,7 +62,6 @@ class TestCase extends OrchestraTestCase
         return [
             DocumentServiceProvider::class,
             SaasUtilsServiceProvider::class,
-            MlsServiceProvider::class
         ];
     }
 
