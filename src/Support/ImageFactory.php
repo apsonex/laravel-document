@@ -192,11 +192,7 @@ class ImageFactory
             $this->getImageManager()->encode($this->driver->extension()) :
             $this->getImageManager()->fit($width, $height)->encode($this->driver->extension());
 
-        $this->storageDisk->put(
-            $path,
-            $encoded,
-            ['visibility' => $this->data['visibility']]
-        );
+        $this->putDiskToStorage($path, $encoded, $mime);
 
         $size = $this->storageDisk->size($path);
 
@@ -216,6 +212,17 @@ class ImageFactory
         $encoded = null;
 
         return $processedVariation;
+    }
+
+    protected function putDiskToStorage($path, $encoded, $mime)
+    {
+        $this->storageDisk->put(
+            $path,
+            $encoded->stream(),
+            [
+                'mimetype' => $mime
+            ]
+        );
     }
 
     protected function makeVariationName($data, $variationName = ''): string
