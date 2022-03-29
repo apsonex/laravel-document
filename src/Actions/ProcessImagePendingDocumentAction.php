@@ -96,8 +96,6 @@ class ProcessImagePendingDocumentAction
         return Document::create($data);
     }
 
-
-
     protected function makeImageFactory(): ?ImageFactory
     {
         try {

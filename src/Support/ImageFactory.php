@@ -2,11 +2,9 @@
 
 namespace Apsonex\LaravelDocument\Support;
 
-use Apsonex\LaravelDocument\Models\Document;
 use Apsonex\LaravelDocument\Support\ImageDrivers\ImageDriver;
 use Apsonex\LaravelDocument\Support\ImageDrivers\RetsBaseObjectImageDriver;
 use Apsonex\LaravelDocument\Support\ImageDrivers\UploadedFileImageDriver;
-use Exception;
 use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Str;

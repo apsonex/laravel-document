@@ -4,7 +4,6 @@ namespace Apsonex\LaravelDocument\Tests;
 
 use Apsonex\LaravelDocument\Support\PendingDocument\PendingDocument;
 use Apsonex\LaravelDocument\Tests\fixtures\TestModel;
-use Apsonex\Mls\Models\Listing;
 use Apsonex\SaasUtils\Facades\DiskProvider;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\File;
