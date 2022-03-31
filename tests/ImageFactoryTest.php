@@ -7,6 +7,7 @@ use Apsonex\LaravelDocument\Support\ParseVariations;
 use Apsonex\Rets\Models\BaseObject;
 use Apsonex\SaasUtils\Facades\DiskProvider;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Str;
 
 class ImageFactoryTest extends TestCase
 {
@@ -40,6 +41,7 @@ class ImageFactoryTest extends TestCase
         $data = ImageFactory::forRetsBaseObject($baseObject)
             ->variations($variations)
             ->visibilityPublic()
+            ->batchId('images')
             ->disk(DiskProvider::public())
             ->basename('image-name')
             ->persist();
@@ -66,6 +68,7 @@ class ImageFactoryTest extends TestCase
         $data = ImageFactory::make($this->testFile('food-hd-long.jpg'))
             ->variations($variations)
             ->visibilityPublic()
+            ->batchId(Str::random(10))
             ->disk(DiskProvider::public())
             ->directory('some')
             ->basename('image-name')
@@ -121,6 +124,8 @@ class ImageFactoryTest extends TestCase
             'FACEBOOK',
         ];
 
+        $count = count($variations);
+
         $data = ImageFactory::make($this->testFile('food-hd-long.jpg')->getContent())
             ->variations($variations)
             ->visibilityPublic()
@@ -129,13 +134,14 @@ class ImageFactoryTest extends TestCase
             ->basename('image-name')
             ->persist();
 
-        $this->assertCount(3, File::allFiles($this->getPublicStoragePath()));
+        $dir = DiskProvider::public()->path('some');
+
+        // +1 for the original
+        $this->assertCount($count + 1, File::allFiles($dir));
 
         ImageFactory::deleteVariations(DiskProvider::public(), $data['variations'], true);
 
-        $this->assertFalse(File::isDirectory($this->getPublicStoragePath() . '/some'));
-
-        $this->assertCount(0, File::allFiles($this->getPublicStoragePath()));
+        $this->assertFalse(File::isDirectory($dir));
 
         $this->cleanStorage();
     }

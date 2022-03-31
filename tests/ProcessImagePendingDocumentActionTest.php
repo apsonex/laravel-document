@@ -28,7 +28,6 @@ class ProcessImagePendingDocumentActionTest extends TestCase
             //->groupName($this->groupId)
             //->setDirectory($this->listing->media_path);
 
-        dd($pending);
 //
 //        ProcessImagePendingDocumentAction::execute($pendingDocument);
     }

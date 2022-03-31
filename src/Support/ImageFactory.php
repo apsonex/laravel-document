@@ -20,6 +20,7 @@ class ImageFactory
         'path'       => null,
         'directory'  => null,
         'basename'   => null,
+        'batchId'    => null,
         'variations' => null,
         'visibility' => 'private',
     ];
@@ -29,8 +30,6 @@ class ImageFactory
     protected array $processedVariations = [];
 
     protected int $totalSize = 0;
-
-    protected string|int|null $variationBatchId = null;
 
     public static function make(UploadedFile|string $file): static
     {
@@ -103,15 +102,25 @@ class ImageFactory
         return $this;
     }
 
-    public function disk(Filesystem $disk): static
+    public function batchId(string|int $batchId): static
     {
-        $this->storageDisk = $disk;
+        $this->data['batchId'] = $batchId;
         return $this;
     }
 
-    public function batchId($batchId): static
+    public function visibility(): string
     {
-        $this->variationBatchId = $batchId;
+        return $this->data['visibility'] === 'public' ? 'public' : 'private';
+    }
+
+    public function diskName(): string
+    {
+        return $this->storageDisk->getConfig()['driver'];
+    }
+
+    public function disk(Filesystem $disk): static
+    {
+        $this->storageDisk = $disk;
         return $this;
     }
 
@@ -138,16 +147,13 @@ class ImageFactory
 
         $this->data = [
             ...$this->data,
-            'batch'     => $this->variationBatchId ?: now()->getTimestamp(),
             'basename'  => str($this->data['basename'] ?: $this->driver->filename())->slug()->toString(),
             'directory' => $this->data['directory'] ?: md5(Str::uuid()),
         ];
 
-        if ($this->persistOriginal) {
-            $this->processedVariations['original'] = $this->saveVariationToDisk('original', [], true);
-        }
+        $this->saveOriginal();
 
-        $variations = empty($this->data['variations'] ?? []) ? $this->processedVariations : $this->persistVariations();
+        $variations = $this->data['variations'] ? $this->persistVariations() : $this->processedVariations;
 
         return [
             'media_path' => $this->data['directory'],
@@ -158,6 +164,13 @@ class ImageFactory
             'size'       => $this->totalSize,
             'variations' => $variations,
         ];
+    }
+
+    protected function saveOriginal()
+    {
+        if ($this->persistOriginal) {
+            $this->processedVariations['original'] = $this->saveVariationToDisk('original', [], true);
+        }
     }
 
     protected function persistVariations(): array
@@ -180,11 +193,11 @@ class ImageFactory
         $extension = $this->driver->extension();
         $mime = $this->driver->mime();
 
-        $path = vsprintf('%s/%s.%s', [
+        $path = implode('/', array_filter([
             $this->data['directory'],
-            $basename,
-            $extension,
-        ]);
+            $this->data['batchId'],
+            $basename . '.' . $extension,
+        ]));
 
         $encoded = $original ?
             $this->getImageManager()->encode($this->driver->extension()) :
@@ -227,23 +240,6 @@ class ImageFactory
     {
         $variationName = $variationName === 'original' ? '' : $variationName;
 
-        $name = $data['basename'] . ' ' . $variationName . ' ' . ($data['batch'] ?? now()->getTimestamp());
-
-        return str($name)->slug()->toString();
-    }
-
-    public function visibility(): string
-    {
-        return $this->data['visibility'] === 'public' ? 'public' : 'private';
-    }
-
-    public function diskName(): string
-    {
-        return $this->storageDisk->getConfig()['driver'];
-    }
-
-    protected function mediaPath()
-    {
-        return $this->data['directory'];
+        return str($data['basename'] . ' ' . $variationName)->slug()->toString();
     }
 }

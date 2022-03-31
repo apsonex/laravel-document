@@ -21,6 +21,7 @@ class PendingDocument
     public bool $public = false;
     public bool $withOriginal = true;
     public bool $deletePreviousImages = true;
+    public null|string|int $batchId = null;
     public ?int $addedBy = null;
 
 
@@ -92,6 +93,12 @@ class PendingDocument
     public function basename(string $basename): static
     {
         $this->basename = $basename;
+        return $this;
+    }
+
+    public function batchDirectory(string|int $batchId): static
+    {
+        $this->batchId = $batchId;
         return $this;
     }
 

@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\Log;
 class ProcessImagePendingDocumentAction
 {
 
+    protected ImageFactory $factory;
+
+    protected ?array $previousImagesCache;
+
     public function __construct(
         protected PendingDocument $pendingDocument,
         protected ?Document       $document
@@ -29,73 +33,114 @@ class ProcessImagePendingDocumentAction
 
     protected function persist(): Document
     {
-        $imageFactory = $this->makeImageFactory();
+        $this->configFactory();
 
-        if ($this->pendingDocument->public === true) {
-            $imageFactory->visibilityPublic();
-        }
-
-        if ($this->pendingDocument->withOriginal === false) {
-            $imageFactory->withoutOriginal();
-        }
-
-        $imageFactory->variations($this->pendingDocument->variations);
-
-        return $this->document ? $this->updateDocument($imageFactory) : $this->createDocument($imageFactory);
+        return $this->document ? $this->updateDocument() : $this->createDocument();
     }
 
-    protected function updateDocument(ImageFactory $factory): Document
+    /**
+     * Update Document
+     */
+    protected function updateDocument(): Document
     {
-        $previousData = $this->pendingDocument->deletePreviousImages ? $this->document->toArray() : null;
+        $this->cachePreviousImages();
 
-        $factory->disk($this->document->diskInstance());
-
-        if ($basename = $this->pendingDocument->basename) {
-            $factory->basename($basename);
-        }
-
-        $data = $factory
-            ->directory($this->pendingDocument->directory)
-            ->persist();
+        $this->configureFactoryForUpdateAction();
 
         $this->document->fill([
-            ...$data,
+            ...$this->factory->persist(),
             'added_by' => $this->getAddedBy(),
             'type'     => $this->pendingDocument->type ?: $this->document->type,
             'group'    => $this->pendingDocument->group ?: $this->document->group,
             'status'   => $this->pendingDocument->status ?: $this->document->status,
         ])->save();
 
-        if ($this->pendingDocument->deletePreviousImages) {
-            ImageFactory::deleteVariations($this->document->diskInstance(), $previousData['variations'], true);
-        }
+        $this->deletePreviousImages();
 
         return $this->document;
     }
 
-    protected function createDocument(ImageFactory $factory): Document
+    /**
+     * Create Document
+     */
+    protected function createDocument(): Document
     {
-        $data = $factory
-            ->disk(DiskProvider::byVisibility($this->pendingDocument->public ? 'public' : 'private'))
-            ->basename($this->pendingDocument->basename)
-            ->directory($this->pendingDocument->directory)
-            ->persist();
-
-        $this->document = new Document();
+        $this->configFactoryForCreateAction();
 
         $data = [
+            ...$this->factory->persist(),
             'documentable_type' => get_class($this->pendingDocument->model),
             'documentable_id'   => $this->pendingDocument->model->id,
             'type'              => $this->pendingDocument->type,
             'added_by'          => $this->pendingDocument->addedBy ?: (auth()->check() ? auth()->id() : null),
             'group'             => $this->pendingDocument->group,
             'status'            => $this->pendingDocument->status,
-            ...$data,
         ];
 
         return Document::create($data);
     }
 
+    /**
+     * Added By
+     */
+    protected function getAddedBy(): ?int
+    {
+        if ($this->pendingDocument->addedBy) {
+            return $this->pendingDocument->addedBy;
+        }
+
+        return $this->document ?
+            $this->document->added_by :
+            (auth()->check() ? auth()->id() : null);
+    }
+
+
+    /**
+     * Get rets imag error
+     */
+    protected function getsRetsError($object): bool|string
+    {
+        if ($object instanceof BaseObject && method_exists($object, 'isError') && $object->isError()) {
+            return $object->getError()->getCode() . '|' . $object->getError()->getMessage();
+        }
+
+        return false;
+    }
+
+    /**
+     * Configure Factory
+     */
+    protected function configFactory()
+    {
+        $this->factory = $this->makeImageFactory();
+
+        if ($this->pendingDocument->public === true) {
+            $this->factory->visibilityPublic();
+        }
+
+        if ($this->pendingDocument->withOriginal === false) {
+            $this->factory->withoutOriginal();
+        }
+
+        $this->factory
+            ->batchId($this->pendingDocument->batchId)
+            ->variations($this->pendingDocument->variations);
+    }
+
+    /**
+     * Configure factory for image create
+     */
+    protected function configFactoryForCreateAction()
+    {
+        $this->factory
+            ->disk(DiskProvider::byVisibility($this->pendingDocument->public ? 'public' : 'private'))
+            ->basename($this->pendingDocument->basename)
+            ->directory($this->pendingDocument->directory);
+    }
+
+    /**
+     * Make Image Factory
+     */
     protected function makeImageFactory(): ?ImageFactory
     {
         try {
@@ -115,30 +160,37 @@ class ProcessImagePendingDocumentAction
             }
 
             Log::alert(implode('. ', $strings));
+
+            return null;
         }
-    }
-
-
-    protected function getAddedBy(): ?int
-    {
-        if ($this->pendingDocument->addedBy) {
-            return $this->pendingDocument->addedBy;
-        }
-
-        return $this->document ?
-            $this->document->added_by :
-            (auth()->check() ? auth()->id() : null);
     }
 
     /**
-     * Get rets imag error
+     * Cache previous images
      */
-    protected function getsRetsError($object): bool|string
+    protected function cachePreviousImages()
     {
-        if ($object instanceof BaseObject && method_exists($object, 'isError') && $object->isError()) {
-            return $object->getError()->getCode() . '|' . $object->getError()->getMessage();
+        $this->previousImagesCache = $this->pendingDocument->deletePreviousImages ? $this->document->toArray() : null;
+    }
+
+    protected function configureFactoryForUpdateAction()
+    {
+        $this->factory->disk($this->document->diskInstance());
+
+        if ($basename = $this->pendingDocument->basename) {
+            $this->factory->basename($basename);
         }
 
-        return false;
+        $this->factory->directory($this->pendingDocument->directory);
+    }
+
+    /**
+     * Delete Previous Images
+     */
+    protected function deletePreviousImages()
+    {
+        if ($this->pendingDocument->deletePreviousImages) {
+            ImageFactory::deleteVariations($this->document->diskInstance(), $this->previousImagesCache['variations'], true);
+        }
     }
 }

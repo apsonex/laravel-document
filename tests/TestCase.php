@@ -95,24 +95,24 @@ class TestCase extends OrchestraTestCase
 
     protected function cleanStorage()
     {
-        \Illuminate\Support\Facades\File::deleteDirectory(
-            $this->getprivateStoragePath()
-        );
+//        \Illuminate\Support\Facades\File::deleteDirectory(
+//            $this->getprivateStoragePath()
+//        );
 
         \Illuminate\Support\Facades\File::deleteDirectory(
-            $this->getPublicStoragePath()
+            __DIR__ . '/../vendor/orchestra/testbench-core/laravel/storage/app'
         );
     }
 
 
     protected function getPublicStoragePath(): string
     {
-        return __DIR__ . '/../vendor/orchestra/testbench-core/laravel/storage/app/public';
+        return __DIR__ . '/../vendor/orchestra/testbench-core/laravel/storage/app';
     }
 
     protected function getPrivateStoragePath(): string
     {
-        return __DIR__ . '/../vendor/orchestra/testbench-core/laravel/storage/app/private';
+        return __DIR__ . '/../vendor/orchestra/testbench-core/laravel/storage/app';
     }
 
     /**
