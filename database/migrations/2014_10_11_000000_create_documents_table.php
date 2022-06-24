@@ -19,6 +19,7 @@ class CreateDocumentsTable extends Migration
             $table->nullableMorphs('documentable');
             $table->string('status')->nullable();
             $table->string('group');
+            $table->string('name')->nullable();
             $table->string('media_path');
             $table->unsignedInteger('order')->nullable()->index();
             $table->string('type');

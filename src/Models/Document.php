@@ -15,6 +15,7 @@ use Illuminate\Support\Str;
  * @property int         order
  * @property string      type
  * @property string      mime
+ * @property string      name
  * @property string      path
  * @property string      disk
  * @property int         size
@@ -30,7 +31,6 @@ use Illuminate\Support\Str;
  */
 class Document extends Model
 {
-
     const TO_BE_DELETED = "to_be_deleted";
 
     const VARIATION_DIR = 'variations';
@@ -72,8 +72,6 @@ class Document extends Model
                 'url' => $this->getUrl($variation['path'])
             ];
         }
-
-        // return $data;
 
         return [
             ...$data,
